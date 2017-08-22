@@ -11,14 +11,15 @@ struct node
 
 struct list
 {
+    uint64_t handle;
     struct node *head;
     struct node *tail;
-    int total;
+    int count;
     delete_cb_t delete_cb;
     print_cb_t print_cb;
 };
 
-list_t *list_create(delete_cb_t delete_cb, print_cb_t print_cb)
+list_t *list_create(delete_cb_t delete_cb, print_cb_t print_cb, uint64_t handle)
 {
     list_t *l = malloc(sizeof(struct list));
     if(l)
@@ -26,7 +27,15 @@ list_t *list_create(delete_cb_t delete_cb, print_cb_t print_cb)
 
     l->delete_cb = delete_cb;
     l->print_cb = print_cb;
+    l->handle = handle;
     return l;
+}
+
+list_t *list_get_half(list *l, uint64_t )
+
+uint64_t list_get_handle(list_t *l)
+{
+    return l->handle;
 }
 
 struct node *s_node_create(struct list *list, void *data)
@@ -59,7 +68,7 @@ int list_add_tail(list_t *l, void *data)
 
     l->tail->next = n;
     l->tail = n;
-    l->total++;
+    l->count++;
 
     return 0;
 }
@@ -73,7 +82,7 @@ int list_add_head(list_t *l, void *data)
 
     l->head->prev = n;
     l->head = n;
-    l->total++;
+    l->count++;
 
     return 0;
 }
@@ -90,7 +99,7 @@ node_t *list_get_head(list_t *l)
 
 int list_get_count(list_t *l)
 {
-    return l->total;
+    return l->count;
 }
 
 void list_delete(list_t *l, node_t *node)
@@ -115,7 +124,7 @@ void list_delete(list_t *l, node_t *node)
 
     free(node);
 
-    l->total--;
+    l->count--;
 }
 
 void list_clear(list_t *l)
@@ -171,8 +180,7 @@ void node_set_data(node_t *node, void *data)
     {
         if(!node->list || !node->list->delete_cb)
         {
-            LOGW("Can not change the data in node without loosing memory. "
-                 "No deleting callback");
+            LOGW("No deleting callback. Data will not be changed");
             return;
         }
 

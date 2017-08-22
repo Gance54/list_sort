@@ -10,7 +10,7 @@ void prnt(int *n)
 
 int main(void)
 {
-    list_t *l = list_create(free, (print_cb_t)prnt);
+    list_t *l = list_create(free, (print_cb_t)prnt, 12345);
     if(!l)
     {
         LOGE("Failed to allocate memory");
